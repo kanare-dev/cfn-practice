@@ -1,0 +1,21 @@
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.tmp
+
+# AWS credentials — never commit
+.aws/
+*.pem
+*.key
+
+# Python (cfn-lint local use)
+__pycache__/
+*.pyc
+.venv/
+venv/

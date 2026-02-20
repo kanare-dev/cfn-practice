@@ -127,8 +127,10 @@ between the two pipeline runs.
 
 ### Edge Cases
 
-- What happens when the CloudFormation stack enters `ROLLBACK_COMPLETE` state (requires
-  manual deletion before a new deployment can proceed)?
+- **ROLLBACK_COMPLETE**: When the stack enters this state, the pipeline MUST detect it,
+  exit with an error, and print the manual recovery command
+  (`aws cloudformation delete-stack --stack-name <name> --region <region>`) to the
+  pipeline log. Automated stack deletion by the pipeline is out of scope.
 - How does the pipeline behave if AWS credentials expire mid-run?
 - What happens if both pipelines are triggered simultaneously and attempt to update the
   same stack concurrently?
@@ -141,7 +143,9 @@ between the two pipeline runs.
 ### Functional Requirements
 
 - **FR-001**: Both pipelines MUST trigger automatically when a change is pushed to the
-  designated branch of their respective repository.
+  `main` branch **and** the changed files include at least one of: `cfn/**`,
+  `.github/workflows/**`, or `.azure/pipelines/**`. Pushes that modify only
+  documentation or other unrelated files MUST NOT trigger a deployment.
 - **FR-002**: Each pipeline MUST validate the CloudFormation template before attempting
   to create a Change Set or deploy.
 - **FR-003**: Each pipeline MUST create a CloudFormation Change Set and output its
@@ -152,7 +156,9 @@ between the two pipeline runs.
 - **FR-005**: When a deployment fails, the pipeline MUST surface the CloudFormation stack
   event failure reason in the pipeline log.
 - **FR-006**: CloudFormation MUST be configured to roll back automatically to the
-  previous stack state on deployment failure.
+  previous stack state on deployment failure. If the stack enters `ROLLBACK_COMPLETE`
+  state, the pipeline MUST detect this condition, exit with an error, and print the
+  manual recovery command to the pipeline log.
 - **FR-007**: AWS credentials MUST be stored as pipeline secrets — never embedded in
   template files or pipeline YAML.
 - **FR-008**: The CloudFormation template MUST define a VPC with public and private
@@ -194,10 +200,18 @@ between the two pipeline runs.
 - **SC-004**: After running both pipelines with the same template change, the engineer
   can produce a written comparison covering at least 5 concrete differences (setup,
   syntax, secrets handling, log quality, recovery behavior) between GitHub Actions and
-  Azure DevOps.
+  Azure DevOps. The comparison MUST be committed to the repository as `docs/comparison.md`.
 - **SC-005**: The repository contains all configuration needed to deploy a fresh
   CloudFormation stack from either platform with no manual infrastructure pre-steps
   beyond one-time credentials setup in each platform's secret store.
+
+## Clarifications
+
+### Session 2026-02-21
+
+- Q: ROLLBACK_COMPLETE 状態をパイプラインはどう扱うか → A: 検出してエラー終了し、手動削除コマンドをログに表示する（自動削除はしない）
+- Q: パイプラインのトリガー範囲はどうするか → A: `cfn/**` またはパイプライン定義ファイルの変更時のみトリガー（ドキュメント変更では起動しない）
+- Q: 比較結果の成果物をどこに残すか → A: リポジトリ内 `docs/comparison.md` として保存する
 
 ## Assumptions
 

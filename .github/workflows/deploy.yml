@@ -1,0 +1,38 @@
+name: Deploy CloudFormation Stack
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "cfn/**"
+      - ".github/workflows/**"
+
+env:
+  STACK_NAME: cfn-practice-gha
+  TEMPLATE_FILE: cfn/template.yaml
+
+jobs:
+  deploy:
+    name: Validate and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install cfn-lint
+        run: pip install cfn-lint --quiet
+
+      - name: Deploy
+        run: bash scripts/pipeline/deploy.sh
+        env:
+          STACK_NAME: ${{ env.STACK_NAME }}
+          TEMPLATE_FILE: ${{ env.TEMPLATE_FILE }}
