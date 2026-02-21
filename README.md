@@ -21,6 +21,8 @@ CloudFormation を使った IaC の CI/CD を、**GitHub Actions** と **Azure D
 
 検証に必要な要素に絞ったシンプルな構成です（合計 14 リソース）。
 
+![AWS構成図](diagrams/png/aws.png)
+
 ```
 ap-northeast-1 (東京)
 └── VPC (10.0.0.0/16)
@@ -37,6 +39,8 @@ ap-northeast-1 (東京)
 ---
 
 ## CI/CD パイプライン構成
+
+![CI/CD構成図](diagrams/png/cicd.png)
 
 ```
 コードの push
