@@ -13,6 +13,7 @@ Thumbs.db
 .aws/
 *.pem
 *.key
+.envrc
 
 # Python (cfn-lint local use)
 __pycache__/
