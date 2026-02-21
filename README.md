@@ -1,6 +1,7 @@
 # cfn-practice
 
 [![Deploy CloudFormation Stack](https://github.com/kanare-dev/cfn-practice/actions/workflows/deploy.yml/badge.svg)](https://github.com/kanare-dev/cfn-practice/actions/workflows/deploy.yml)
+[![Build Status](https://dev.azure.com/kanare-org/cfn-practice/_apis/build/status%2Fcfn-practice?branchName=main)](https://dev.azure.com/kanare-org/cfn-practice/_build/latest?definitionId=1&branchName=main)
 
 CloudFormation を使った IaC の CI/CD を、**GitHub Actions** と **Azure DevOps** の両方で比較検証するための個人用プロジェクトです。
 
