@@ -22,10 +22,10 @@ steps in `specs/001-cfn-cicd-compare/quickstart.md`.
 | **1. Credential / auth setup UX** | リポジトリ Settings → Secrets → Actions に登録。手順3ステップ。 | Pipelines → Library → Variable Group を作成し変数を登録。パイプライン側からグループを参照する追加設定が必要。手順が多い。 |
 | **2. Pipeline YAML syntax and structure** | `on:` / `jobs:` / `steps:` の3階層。`uses:` でMarketplaceアクションを参照。 | `trigger:` / `pool:` / `steps:` の構造。アクション概念なし、`script:` に直接コマンドを書く。`displayName:` でステップ名を指定。 |
 | **3. Secrets / variable reference syntax** | シークレット: `${{ secrets.NAME }}`、変数: `${{ env.NAME }}` | シークレット・変数ともに `$(NAME)`。Variable Groupで一括管理。 |
-| **4. Change Set log visibility** | _要実機確認_ | _要実機確認_ |
+| **4. Change Set log visibility** | Step 6/7 ヘッダーつきでテーブル表示。整形されて読みやすい。行幅次第で折り返しあり。 | _要実機確認_ |
 | **5. Failure message clarity** | _要実機確認_ | _要実機確認_ |
 | **6. Re-run / retry mechanism** | 失敗ジョブの「Re-run failed jobs」ボタン。同一コミットで即再実行可能。 | 失敗パイプラインの「Re-run failed stages」。ステージ単位で再試行可能。 |
-| **7. Pipeline execution time (first create)** | _要実機確認_ | _要実機確認_ |
+| **7. Pipeline execution time (first create)** | 1m 46s | _要実機確認_ |
 | **8. Pipeline execution time (no-change push)** | _要実機確認_ | _要実機確認_ |
 | **9. Live run monitoring UI** | ステップ単位でリアルタイムログを展開表示。Step Summaryパネルで構造化出力が可能。 | ステップ単位でログを確認可能。Step Summaryに相当する構造化出力パネルはない。 |
 | **10. Path filter trigger syntax** | `paths: ['cfn/**', '.github/workflows/**']`（`**` 再帰グロブ対応） | `paths.include: ['cfn/*', '.azure/pipelines/*']`（`*` 単一階層のみ） |
@@ -128,7 +128,13 @@ Additional notes:
 
 **GitHub Actions**:
 
-> _要実機確認: Change Setテーブルがログのどこに表示されるか、テーブル整形は保たれるか_
+> `── Step 6/7: Change Set contents ──` というヘッダーつきで表示される。
+> テーブル形式（`Action | ResourceType | LogicalResourceId | Replacement`）が
+> ログ上でも整形されて読みやすい。全リソースが1行ずつ列挙され、初回CREATE時は全行 `Add`。
+>
+> 1点注意: ログの行幅が狭い環境では行が折り返されて1行が2行に分割されることがある
+> （今回の実行で `PrivateSubnetCRouteAssoc` の行が折り返されて表示が乱れた）。
+> ただし内容の読み取り自体は問題なし。
 
 **Azure DevOps**:
 
@@ -176,7 +182,7 @@ Fill in after both platforms complete a first-time stack CREATE:
 
 | Scenario | GitHub Actions | Azure DevOps |
 | --- | --- | --- |
-| First stack create (full) | _min_ | _min_ |
+| First stack create (full) | 1m 46s | _要実機確認_ |
 | Stack update (resource change) | _min_ | _min_ |
 | No-change push (empty changeset) | _min_ | _min_ |
 
