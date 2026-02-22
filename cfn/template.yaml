@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: >
   cfn-practice — Multi-AZ VPC with public/private subnets and a private EC2 instance.
   Single source of truth for both GitHub Actions and Azure Pipelines CI/CD verification.
-  deploy 2026-02-22
+  deploy 2026-02-22 13:41
 
 # ---------------------------------------------------------------------------
 # Parameters
