@@ -23,7 +23,7 @@ steps in `specs/001-cfn-cicd-compare/quickstart.md`.
 | **2. Pipeline YAML syntax and structure** | `on:` / `jobs:` / `steps:` の3階層。`uses:` でMarketplaceアクションを参照。 | `trigger:` / `pool:` / `steps:` の構造。アクション概念なし、`script:` に直接コマンドを書く。`displayName:` でステップ名を指定。 |
 | **3. Secrets / variable reference syntax** | シークレット: `${{ secrets.NAME }}`、変数: `${{ env.NAME }}` | シークレット・変数ともに `$(NAME)`。Variable Groupで一括管理。 |
 | **4. Change Set log visibility** | Step 6/7 ヘッダーつきでテーブル表示。整形されて読みやすい。行幅次第で折り返しあり。 | _要実機確認_ |
-| **5. Failure message clarity** | cfn-lint W1030で21s失敗（Step1止まり）。AWSレベル失敗は別シナリオで要確認。 | _要実機確認_ |
+| **5. Failure message clarity** | リソース名・エラー種別・AWSエラーコードが1箇所に出力。原因特定しやすい。（1m 28s） | _要実機確認_ |
 | **6. Re-run / retry mechanism** | 失敗ジョブの「Re-run failed jobs」ボタン。同一コミットで即再実行可能。 | 失敗パイプラインの「Re-run failed stages」。ステージ単位で再試行可能。 |
 | **7. Pipeline execution time (first create)** | 1m 46s | _要実機確認_ |
 | **8. Pipeline execution time (no-change push)** | 41s（"No changes detected" で exit 0） | _要実機確認_ |
@@ -161,14 +161,23 @@ Additional notes:
 
 > _要実機確認_
 
-#### シナリオB: AWSレベルの失敗（cfn-lintをすり抜ける不正値）
-
-cfn-lintが検出できない不正値（存在しないAMI IDなど）を使い、
-スタックイベントのログ出力（Step 7 失敗ハンドラ）を検証する。
+#### シナリオB: AWSレベルの失敗（`ImageId: "ami-00000000000000000"`）
 
 **GitHub Actions**:
 
-> _要実機確認: `ImageId: "ami-00000000000000000"` でテスト予定_
+> cfn-lint・validate-template は通過。Change Setも `Modify EC2Instance (Replacement: True)` として正常作成。
+> Step 7 でスタック更新を実行したが EC2 起動時に AWS が拒否し `UPDATE_ROLLBACK_COMPLETE` に遷移。
+> 失敗ハンドラが起動し、以下がログに出力された：
+>
+> ```
+> EC2Instance | UPDATE_FAILED |
+> Resource handler returned message: "Invalid id: "ami-00000000000000000"
+> (expecting "ami-...") (Service: Ec2, Status Code: 400, ...)"
+> Final stack status: UPDATE_ROLLBACK_COMPLETE
+> ```
+>
+> 失敗理由（無効なAMI ID）・対象リソース（EC2Instance）・AWSエラーコード（400）が
+> すべてログ1箇所にまとまっており、原因特定が容易。全体1m 28sで終了。
 
 **Azure DevOps**:
 
@@ -176,7 +185,7 @@ cfn-lintが検出できない不正値（存在しないAMI IDなど）を使い
 
 Which platform made the failure reason easier to find?
 
-> _要実機確認（シナリオB完了後に記入）_
+> _要実機確認（Azure DevOps 完了後に記入）_
 
 ---
 
@@ -202,7 +211,7 @@ Fill in after both platforms complete a first-time stack CREATE:
 | Scenario | GitHub Actions | Azure DevOps |
 | --- | --- | --- |
 | First stack create (full) | 1m 46s | _要実機確認_ |
-| Stack update (resource change) | _min_ | _min_ |
+| Stack update (resource change / failure+rollback) | 1m 28s | _要実機確認_ |
 | No-change push (empty changeset) | 41s | _要実機確認_ |
 
 ---

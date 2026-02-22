@@ -187,8 +187,7 @@ Resources:
     Properties:
       InstanceType: !Ref InstanceType
       SubnetId: !Ref PrivateSubnetA
-      # ImageId: "{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}"  # 本番用
-      ImageId: "ami-00000000000000000"  # テスト用: AWSレベル失敗を意図的に発生させる
+      ImageId: "{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}"
       SecurityGroupIds:
         - !Ref EC2SecurityGroup
       Tags:
