@@ -23,7 +23,7 @@ steps in `specs/001-cfn-cicd-compare/quickstart.md`.
 | **2. Pipeline YAML syntax and structure** | `on:` / `jobs:` / `steps:` の3階層。`uses:` でMarketplaceアクションを参照。 | `trigger:` / `pool:` / `steps:` の構造。アクション概念なし、`script:` に直接コマンドを書く。`displayName:` でステップ名を指定。 |
 | **3. Secrets / variable reference syntax** | シークレット: `${{ secrets.NAME }}`、変数: `${{ env.NAME }}` | シークレット・変数ともに `$(NAME)`。Variable Groupで一括管理。 |
 | **4. Change Set log visibility** | Step 6/7 ヘッダーつきでテーブル表示。整形されて読みやすい。行幅次第で折り返しあり。 | _要実機確認_ |
-| **5. Failure message clarity** | _要実機確認_ | _要実機確認_ |
+| **5. Failure message clarity** | cfn-lint W1030で21s失敗（Step1止まり）。AWSレベル失敗は別シナリオで要確認。 | _要実機確認_ |
 | **6. Re-run / retry mechanism** | 失敗ジョブの「Re-run failed jobs」ボタン。同一コミットで即再実行可能。 | 失敗パイプラインの「Re-run failed stages」。ステージ単位で再試行可能。 |
 | **7. Pipeline execution time (first create)** | 1m 46s | _要実機確認_ |
 | **8. Pipeline execution time (no-change push)** | 41s（"No changes detected" で exit 0） | _要実機確認_ |
@@ -145,19 +145,38 @@ Additional notes:
 
 ### 5. Failure Message Clarity
 
-**Scenario**: Push a deliberately broken configuration (e.g., invalid InstanceType).
+#### シナリオA: cfn-lintレベルの失敗（`InstanceType: t1.invalid`）
 
 **GitHub Actions**:
 
-> _要実機確認: ログに出るFAILEDイベントの内容を記録_
+> cfn-lintが W1030 として検出し、Step 1/7 で exit code 4 でブロック。
+> AWSへの呼び出しは一切発生しない。全体21sで終了。
+> cfn-lintのWarningメッセージ（有効なInstanceType一覧）がログに出力され、原因は明確。
+>
+> 【観察】 InstanceType の不正値は cfn-lint が検出できるため、
+> AWS レベルの失敗（スタックイベント）には到達しない。
+> これは期待より早い段階での失敗検出であり、望ましい挙動。
 
 **Azure DevOps**:
 
-> _要実機確認: Azure Pipelinesでの失敗ログを記録_
+> _要実機確認_
+
+#### シナリオB: AWSレベルの失敗（cfn-lintをすり抜ける不正値）
+
+cfn-lintが検出できない不正値（存在しないAMI IDなど）を使い、
+スタックイベントのログ出力（Step 7 失敗ハンドラ）を検証する。
+
+**GitHub Actions**:
+
+> _要実機確認: `ImageId: "ami-00000000000000000"` でテスト予定_
+
+**Azure DevOps**:
+
+> _要実機確認_
 
 Which platform made the failure reason easier to find?
 
-> _要実機確認_
+> _要実機確認（シナリオB完了後に記入）_
 
 ---
 
