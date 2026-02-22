@@ -29,6 +29,7 @@ steps in `specs/001-cfn-cicd-compare/quickstart.md`.
 | **8. Pipeline execution time (no-change push)** | | |
 | **9. Live run monitoring UI** | | |
 | **10. Path filter trigger syntax** | | |
+| **11. ホステッドランナーの初期利用** | 即時利用可能（無料枠あり） | 新規組織はホステッド並列実行の申請が必要（承認まで2〜3営業日） |
 
 ---
 
@@ -133,6 +134,23 @@ Fill in after both platforms complete a first-time stack CREATE:
 | First stack create (full) | min | min |
 | Stack update (resource change) | min | min |
 | No-change push (empty changeset) | min | min |
+
+---
+
+### 11. ホステッドランナーの初期利用
+
+**GitHub Actions**:
+
+> パブリック・プライベートリポジトリともに、リポジトリ作成後すぐにホステッドランナー（ubuntu-latest）が利用可能。
+> 追加の申請・設定は不要。
+
+**Azure DevOps**:
+
+> 新規組織ではホステッド並列実行（Microsoft-hosted agents）がデフォルトで無効。
+> 以下のフォームから無料枠の申請が必要で、承認まで2〜3営業日かかる。
+> `https://aka.ms/azpipelines-parallelism-request`
+>
+> 申請が承認されるまでのワークアラウンドとして、自前PCをセルフホステッドエージェントとして登録する方法もある。
 
 ---
 
