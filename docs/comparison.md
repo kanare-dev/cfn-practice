@@ -26,7 +26,7 @@ steps in `specs/001-cfn-cicd-compare/quickstart.md`.
 | **5. Failure message clarity** | _要実機確認_ | _要実機確認_ |
 | **6. Re-run / retry mechanism** | 失敗ジョブの「Re-run failed jobs」ボタン。同一コミットで即再実行可能。 | 失敗パイプラインの「Re-run failed stages」。ステージ単位で再試行可能。 |
 | **7. Pipeline execution time (first create)** | 1m 46s | _要実機確認_ |
-| **8. Pipeline execution time (no-change push)** | _要実機確認_ | _要実機確認_ |
+| **8. Pipeline execution time (no-change push)** | 40s（ただしバグにより exit 1。修正後に再計測） | _要実機確認_ |
 | **9. Live run monitoring UI** | ステップ単位でリアルタイムログを展開表示。Step Summaryパネルで構造化出力が可能。 | ステップ単位でログを確認可能。Step Summaryに相当する構造化出力パネルはない。 |
 | **10. Path filter trigger syntax** | `paths: ['cfn/**', '.github/workflows/**']`（`**` 再帰グロブ対応） | `paths.include: ['cfn/*', '.azure/pipelines/*']`（`*` 単一階層のみ） |
 | **11. ホステッドランナーの初期利用** | 即時利用可能（無料枠あり） | 新規組織はホステッド並列実行の申請が必要（承認まで2〜3営業日） |
@@ -184,7 +184,7 @@ Fill in after both platforms complete a first-time stack CREATE:
 | --- | --- | --- |
 | First stack create (full) | 1m 46s | _要実機確認_ |
 | Stack update (resource change) | _min_ | _min_ |
-| No-change push (empty changeset) | _min_ | _min_ |
+| No-change push (empty changeset) | 約40s（バグ修正後に再計測） | _要実機確認_ |
 
 ---
 

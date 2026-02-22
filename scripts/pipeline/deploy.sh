@@ -139,7 +139,7 @@ while true; do
   if [[ "$CS_STATUS" == "CREATE_COMPLETE" ]]; then
     break
   elif [[ "$CS_STATUS" == "FAILED" ]]; then
-    if echo "$CS_STATUS_REASON" | grep -q "didn't contain changes"; then
+    if echo "$CS_STATUS_REASON" | grep -qE "didn't contain changes|No updates are to be performed"; then
       echo ""
       echo "No changes detected — stack is up to date."
       aws cloudformation delete-change-set \
