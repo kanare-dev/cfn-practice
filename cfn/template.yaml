@@ -19,7 +19,7 @@ Parameters:
 
   InstanceType:
     Type: String
-    Default: t3.micro
+    Default: t1.invalid
     Description: EC2 instance type for the private instance.
 
 # ---------------------------------------------------------------------------
